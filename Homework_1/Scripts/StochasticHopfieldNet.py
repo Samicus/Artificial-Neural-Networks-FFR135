@@ -51,9 +51,9 @@ if __name__ == "__main__":
         for j in range(T):
             S_1 = S_0
             n_update = random.randint(0, N-1)   # choose random neuron to update
-            b = np.dot(w_i[n_update, :], np.transpose(S_0))
+            b = w_i[n_update, :] @ np.transpose(S_0)
             S_1[n_update] = stochastic_async_update(b)  #update asynchronously
-            temp_mu[j] = np.dot(S_1, np.array(p_r[:, 0])) / N
+            temp_mu[j] = S_1 @ np.array(p_r[:, 0]) / N
             S_0 = S_1
 
         m_array[i] = np.sum(temp_mu) / T

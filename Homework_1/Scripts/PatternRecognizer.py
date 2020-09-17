@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 N = 160
 converged = False
-pattern_to_feed = 3       # chose which distorted pattern to feed
+pattern_to_feed = 2       # chose which distorted pattern to feed
 
 def sign(b):        # signum function
     if b >= 0:
@@ -28,7 +28,7 @@ def reshape(p): # reshape using a typewriter scheme
 
 
 def initialize_patterns():  # load the correct patterns from a pkl file ( 0, 1, 2, 3, 4)
-    with open('patterns.pkl', 'rb') as f1:
+    with open('../patterns.pkl', 'rb') as f1:
         patterns = pickle.load(f1)          # patterns is a 5x160 ndarray where every column is a pattern
         patterns = np.array(patterns)
     return patterns
