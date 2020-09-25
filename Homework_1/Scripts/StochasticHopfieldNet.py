@@ -38,6 +38,7 @@ def store_pattern(p):       # Store patterns in a weight matrix
     return w_i
 
 
+
 if __name__ == "__main__":
 
     m_array = np.zeros(100)

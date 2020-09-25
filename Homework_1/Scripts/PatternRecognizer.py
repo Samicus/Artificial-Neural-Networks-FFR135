@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 N = 160
 converged = False
-pattern_to_feed = 2       # chose which distorted pattern to feed
+pattern_to_feed = 3      # chose which distorted pattern to feed
 
 def sign(b):        # signum function
     if b >= 0:
@@ -87,7 +87,4 @@ if __name__ == "__main__":
 
     new_state = reshape(S_1)
     distorted_pattern = reshape(feed_pattern(pattern_to_feed))
-
     plot(distorted_pattern, new_state)
-   #print(repr(distorted_pattern))
-    print(w)
