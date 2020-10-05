@@ -43,7 +43,7 @@ def calculate_output(x_mu, w, theta):
     return output, b
 
 
-def sigmoid(output):
+def signum(output):
     output_copy = np.copy(output)
     output_copy[output_copy == 0] = 1
     output_copy = np.sign(output_copy)
@@ -98,7 +98,7 @@ if __name__ == "__main__":
                     thresholds = thresholds - learning_rate * error  # update threshold
 
                     if (
-                        sigmoid(output) == target[i]
+                        signum(output) == target[i]
                     ).all():  # check for linear seperability
                         seperable = True
                         print(target_str[i] + " is linearly seperable")

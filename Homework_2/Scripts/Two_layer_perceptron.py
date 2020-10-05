@@ -8,7 +8,7 @@ class Layer:
     def __init__(self, in_features, out_features):
         self.in_features = in_features
         self.out_features = out_features
-        self.weight = np.random.uniform(-0.1, 0.1, size=(out_features, in_features))
+        self.weight = np.random.uniform(-0.2, 0.2, size=(out_features, in_features))
         self.bias = np.random.uniform(-1, 1, size=(self.out_features))
 
     def forward(self, x):
@@ -19,7 +19,7 @@ class Layer:
 
 class Network:
     def __init__(self, M1, M2):
-        self.learning_rate = 0.02  # ?
+        self.learning_rate = 0.08
         self.M1 = M1
         self.M2 = M2
         self.layer_1 = Layer(2, M1)
@@ -55,16 +55,14 @@ class Network:
         self.delta_out = self.error
 
         self.delta_2 = (
-            self.delta_out
-            * self.output_layer.weight
-            * self.tanh_prime(self.output_layer.b)
+            self.delta_out * self.output_layer.weight * self.tanh_prime(self.layer_2.b)
         ).squeeze()
 
         for i in range(self.M2):
             self.delta_1[i] = np.sum(
                 self.delta_2[i]
                 * self.layer_2.weight[i, :]
-                * self.tanh_prime(self.layer_2.b[i])
+                * self.tanh_prime(self.layer_1.b[i])
             )
 
         # print("delta_out", self.delta_out)
@@ -86,12 +84,10 @@ class Network:
         self.output_layer.bias -= self.learning_rate * self.delta_out
 
 
-def sigmoid(output):
-    output_copy = np.copy(output)
-    output_copy[output_copy == 0] = 1
-    output_copy = np.sign(output_copy)
-    # output_copy = np.round(output_copy.transpose()).astype(int)
-    return output_copy
+def signum(output):
+    output[output == 0] = 1
+    output = np.sign(output)
+    return output
 
 
 def tanh(b):
@@ -112,33 +108,40 @@ def tanh_prime(b):
 
 
 if __name__ == "__main__":
-    M1 = 5
-    M2 = 5
+    M1 = 20
+    M2 = 20
     network = Network(M1, M2)
     training_set = genfromtxt("Homework_2/training_set.csv", delimiter=",")
     validation_set = genfromtxt("Homework_2/validation_set.csv", delimiter=",")
-    n_epochs = 20
-
+    n_epochs = 1000
+    run = True
+    numb = 0
     for epoch in range(n_epochs):
-        prediction = np.zeros(len(validation_set))
-        np.random.shuffle(training_set)
-        for i in range(len(training_set)):
-            x = training_set[i, (0, 1)]
-            t = training_set[i, 2]
-            network.forward(x)
-            network.compute_error(t)
-            network.backward_propogation()
-            network.update_weights(x)
-            network.update_bias()
+        if run:
+            prediction = np.zeros(len(validation_set))
+            np.random.shuffle(training_set)
+            for i in range(len(training_set)):
+                x = training_set[i, (0, 1)]
+                t = training_set[i, 2]
+                network.forward(x)
+                network.compute_error(t)
+                network.backward_propogation()
+                network.update_weights(x)
+                network.update_bias()
+                print(numb)
+                numb += 1
+            # validation after every 20 epochs
+            if epoch % 20 == 0:
+                for j in range(len(validation_set)):
+                    x = validation_set[j, (0, 1)]
+                    t = validation_set[j, 2]
+                    prediction[j] = network.forward(x)
 
-        # validation
-        for j in range(len(validation_set)):
-            x = validation_set[j, (0, 1)]
-            t = validation_set[j, 2]
-            prediction[j] = network.forward(x)
-
-        prediction = sigmoid(prediction)
-        diff = prediction - validation_set[:, 2]
-        print(len(prediction), len(validation_set[:, 2]))
-        C = sum(diff) / (len(validation_set) * 2)
-        print(C)
+                prediction = signum(prediction)
+                diff = np.abs(prediction - validation_set[:, 2])
+                C = sum(diff) / (len(validation_set) * 2)
+                # print(validation_set[:, 2])
+                print("C:", C)
+                print("epoch: ", epoch)
+                if C < 0.12:  # TODO: save weights and biases
+                    run = False
