@@ -8,18 +8,17 @@ class Layer:
     def __init__(self, in_features, out_features):
         self.in_features = in_features
         self.out_features = out_features
-        self.weight = np.random.uniform(-0.2, 0.2, size=(out_features, in_features))
-        self.bias = np.random.uniform(-1, 1, size=(self.out_features))
+        self.weight = np.random.uniform(0, 1, size=(out_features, in_features))
+        self.bias = np.random.uniform(-0.02, 0.02, size=(self.out_features))
 
     def forward(self, x):
-
         self.b = np.dot(self.weight, x) - self.bias
         return self.b
 
 
 class Network:
     def __init__(self, M1, M2):
-        self.learning_rate = 0.08
+        self.learning_rate = 0.02
         self.M1 = M1
         self.M2 = M2
         self.layer_1 = Layer(2, M1)
@@ -58,7 +57,7 @@ class Network:
             self.delta_out * self.output_layer.weight * self.tanh_prime(self.layer_2.b)
         ).squeeze()
 
-        for i in range(self.M2):
+        for i in range(self.M2):  # self.M2?
             self.delta_1[i] = np.sum(
                 self.delta_2[i]
                 * self.layer_2.weight[i, :]
@@ -108,8 +107,9 @@ def tanh_prime(b):
 
 
 if __name__ == "__main__":
-    M1 = 20
-    M2 = 20
+    M1 = 25
+    M2 = 25
+
     network = Network(M1, M2)
     training_set = genfromtxt("Homework_2/training_set.csv", delimiter=",")
     validation_set = genfromtxt("Homework_2/validation_set.csv", delimiter=",")
@@ -128,20 +128,19 @@ if __name__ == "__main__":
                 network.backward_propogation()
                 network.update_weights(x)
                 network.update_bias()
-                print(numb)
-                numb += 1
-            # validation after every 20 epochs
-            if epoch % 20 == 0:
-                for j in range(len(validation_set)):
-                    x = validation_set[j, (0, 1)]
-                    t = validation_set[j, 2]
-                    prediction[j] = network.forward(x)
 
-                prediction = signum(prediction)
-                diff = np.abs(prediction - validation_set[:, 2])
-                C = sum(diff) / (len(validation_set) * 2)
-                # print(validation_set[:, 2])
-                print("C:", C)
-                print("epoch: ", epoch)
-                if C < 0.12:  # TODO: save weights and biases
-                    run = False
+            # validation after every 20 epochs
+            # if epoch % 20 == 0:
+            for j in range(len(validation_set)):
+                x = validation_set[j, (0, 1)]
+                t = validation_set[j, 2]
+                prediction[j] = network.forward(x)
+
+            prediction = signum(prediction)
+            diff = np.abs(prediction - validation_set[:, 2])
+            C = sum(diff) / (len(validation_set) * 2)
+            # print(validation_set[:, 2])
+            print("C:", C)
+            print("epoch: ", epoch)
+            if C < 0.12:  # TODO: save weights and biases
+                run = False
