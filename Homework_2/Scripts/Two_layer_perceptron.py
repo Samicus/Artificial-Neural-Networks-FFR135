@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 from numpy import genfromtxt
 import math
+from numpy import asarray
+from numpy import savetxt
 
 
 class Layer:
@@ -149,3 +151,15 @@ if __name__ == "__main__":
             print("epoch: ", epoch)
             if C < 0.12:  # TODO: save weights and biases
                 run = False
+                w1 = asarray(network.layer_1.weight)
+                w2 = asarray(network.layer_2.weight)
+                w3 = asarray(network.output_layer.weight)
+                t1 = asarray(network.layer_1.bias)
+                t2 = asarray(network.layer_2.bias)
+                t3 = asarray(network.output_layer.bias)
+                savetxt("w1.csv", w1, delimiter=",")
+                savetxt("w2.csv", w2, delimiter=",")
+                savetxt("w3.csv", w3, delimiter=",")
+                savetxt("t1.csv", t1, delimiter=",")
+                savetxt("t2.csv", t2, delimiter=",")
+                savetxt("t3.csv", t3, delimiter=",")
