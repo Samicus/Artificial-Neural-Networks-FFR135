@@ -42,28 +42,45 @@ class CNN_2(nn.Module):
         super(CNN_2, self).__init__()
         self.conv1 = nn.Conv2d(
             in_channels=1,
-            out_channels=8,
+            out_channels=20,
             kernel_size=(3, 3),
             stride=(1, 1),
             padding=(1, 1),
         )
-        self.pool = nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))
+        self.batch1 = nn.BatchNorm2d(num_features = 20, eps= 1e-05, momentum = 0.9, affine = True, track_running_stats=True)
+        self.pool1 = nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))
         self.conv2 = nn.Conv2d(
-            in_channels=8,
-            out_channels=16,
+            in_channels=20,
+            out_channels=30,
             kernel_size=(3, 3),
             stride=(1, 1),
             padding=(1, 1),
         )
-        self.fc1 = nn.Linear(16 * 7 * 7, 10)
+        self.batch2 = nn.BatchNorm2d(num_features = 30, eps= 1e-05, momentum = 0.9, affine = True, track_running_stats=True)
+        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))
+        self.conv3 = nn.Conv2d(
+            in_channels=30,
+            out_channels=50,
+            kernel_size=(3, 3),
+            stride=(1, 1),
+            padding=(1, 1),
+        )
+        self.batch3 = nn.BatchNorm2d(num_features = 50, eps= 1e-05, momentum = 0.9, affine = True, track_running_stats=True)
+
+
+        self.fc = nn.Linear(2450, 10)
 
     def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = self.pool(x)
-        x = F.relu(self.conv2(x))
-        x = self.pool(x)
+        x = self.conv1(x)
+        x = F.relu(self.batch1(x))
+        x = self.pool1(x)
+        x = self.conv2(x)
+        x = F.relu(self.batch2(x))
+        x = self.pool2(x)
+        x = self.conv3(x)
+        x = F.relu(self.batch3(x))
         x = x.reshape(x.shape[0], -1)
-        x = self.fc1(x)
+        x = self.fc(x)
 
         return x
 

@@ -53,7 +53,8 @@ test_dataset = datasets.MNIST(
 test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
 
 # Initialize network
-model = CNN.CNN_1().to(device)
+
+model = CNN.CNN_2().to(device)
 
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()
