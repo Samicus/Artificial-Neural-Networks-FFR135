@@ -1,3 +1,4 @@
+
 import CNN
 import torch
 import torch.nn as nn
@@ -46,7 +47,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 train_dataset = datasets.MNIST(
     root="../dataset/", train=True, transform=transforms.ToTensor(), download=True
 )
-train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
+train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True, num_workers=64)
 test_dataset = datasets.MNIST(
     root="../dataset/", train=False, transform=transforms.ToTensor(), download=True
 )
@@ -81,10 +82,13 @@ for epoch in range(n_epochs):
         optimizer.step()
 
         print("step", batch_idx, ", loss:", loss.item())
+        print(torch.cuda.is_available())
 
     # check the accuaracy on training & test
-    if (batch_idx + (epoch * 8)) % 30 == 0:
-        check_accuaracy(train_loader, model)
+    print("test set")
+    check_accuaracy(test_loader, model)
+    print("train set")
+    check_accuaracy(train_loader, model)
 
 
 print("result on test set:")
