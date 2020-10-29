@@ -14,7 +14,7 @@ n_epochs = 60
 batch_size = 8192
 learning_rate = 0.01
 validation_patience = 5
-validation_frequency = 5
+validation_frequency = 30
 
 
 def check_accuaracy(loader, model):
@@ -55,7 +55,7 @@ test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=Tr
 
 # Initialize network
 
-model = CNN.CNN_2().to(device)
+model = CNN.CNN_2().to(device)      # Choose network CNN_1 or CNN_2
 
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()
